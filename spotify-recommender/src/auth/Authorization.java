@@ -26,6 +26,8 @@ import org.apache.hc.core5.http.ParseException;
  * 
  */
 public class Authorization {
+    
+    private static AuthHttpServer authHttpServer = new AuthHttpServer(new ServerConfiguration());
     /**
      * obtained from spotify developers' page
      */
@@ -34,8 +36,7 @@ public class Authorization {
      * used when the user successfully/fails to authenticate, not really useful for us
      */
     private static final URI redirectUri = SpotifyHttpManager
-            .makeUri("https://example.com/spotify-redirect");
-    private static final String callBackURIString = redirectUri.toString();
+            .makeUri(authHttpServer.config.getRedirectUri());
     /**
      * these fields have to do with PKCE authentication
      */
@@ -49,7 +50,7 @@ public class Authorization {
     private final AuthorizationCodeUriRequest authorizationCodeUriRequest;
 //    private static final AuthorizationCodePKCERequest authorizationCodePKCERequest = spotifyApi.authorizationCodePKCE(code, codeVerifier)
 //            .build();
-
+    
     /**
      * constructor, initializes the necessary authentication codes
      */
@@ -123,23 +124,27 @@ public class Authorization {
         return authorizeURI.toString();
     }
 
-    public SpotifyApi apiFromCode(String code) {
-        SpotifyApi spotifyApi = new SpotifyApi.Builder().setClientId(clientId)
-                .setRedirectUri(redirectUri).build();
-        AuthorizationCodePKCERequest authorizationCodePKCERequest = spotifyApi
-                .authorizationCodePKCE(code, codeVerifier).build();
-        AuthorizationCodeCredentials authorizationCodeCredentials = null;
-        try {
-            authorizationCodeCredentials = authorizationCodePKCERequest
-                    .execute();
-            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
-            spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
-        } catch (ParseException | SpotifyWebApiException | IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        System.out.println("Expires in: " + authorizationCodeCredentials.getExpiresIn());
-        // Set access and refresh token for further "spotifyApi" object usage
-        return spotifyApi;
+    public void handleRedirectUri() {
+        authHttpServer.start();
     }
+    
+//    public SpotifyApi apiFromCode(String code) {
+//        SpotifyApi spotifyApi = new SpotifyApi.Builder().setClientId(clientId)
+//                .setRedirectUri(redirectUri).build();
+//        AuthorizationCodePKCERequest authorizationCodePKCERequest = spotifyApi
+//                .authorizationCodePKCE(code, codeVerifier).build();
+//        AuthorizationCodeCredentials authorizationCodeCredentials = null;
+//        try {
+//            authorizationCodeCredentials = authorizationCodePKCERequest
+//                    .execute();
+//            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+//            spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
+//        } catch (ParseException | SpotifyWebApiException | IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        System.out.println("Expires in: " + authorizationCodeCredentials.getExpiresIn());
+//        // Set access and refresh token for further "spotifyApi" object usage
+//        return spotifyApi;
+//    }
 }

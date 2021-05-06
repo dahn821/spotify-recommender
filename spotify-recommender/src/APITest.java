@@ -52,14 +52,15 @@ public class APITest {
 //      }
 //    }
     public static void main(String[] args) {
-        Authorization a = new Authorization();
-        System.out.println(a.getAuthorizationURI());
+        Authorization authorizer = new Authorization();
+        System.out.println(authorizer.getAuthorizationURI());
         Scanner input = new Scanner(System.in);
 
         System.out.println(
                 "enter the URL into your browser and click agree, then enter the part after ?code= (should be a long string of alphanumeric characters): ");
         String code = input.next();
-        SpotifyApi spotifyApi = a.apiFromCode(code);
+        input.close();
+        SpotifyApi spotifyApi = authorizer.apiFromCode(code);
         // write code here
         /*
          * NOTE: this access token will work for 1 hour, if you want to just copy + paste it instead
