@@ -20,15 +20,20 @@ public class AuthHttpServer {
     public AuthHttpServer(ServerConfiguration config) {
         this.config = config;
     }
-
-    public void start() {
+    
+    /**
+     * 
+     * @return code from the authentication process (PKCE)
+     */
+    public String start() {
+        StringBuilder output = new StringBuilder();
         try {
             CountDownLatch latch = new CountDownLatch(1);
             HttpServer server = HttpServer
                     .create(new InetSocketAddress(config.getHost(), config.getPort()), 0);
             server.createContext(config.getContext(), exchange -> {
                 String code = exchange.getRequestURI().toString().split("=")[1];
-                System.out.println(code);
+                output.append(code);
                 String response = "";
                 exchange.sendResponseHeaders(200, response.length());
                 exchange.getResponseBody().write(response.getBytes(StandardCharsets.UTF_8));
@@ -42,5 +47,6 @@ public class AuthHttpServer {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        return output.toString();
     }
 }

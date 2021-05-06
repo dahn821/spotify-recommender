@@ -54,29 +54,20 @@ public class APITest {
     public static void main(String[] args) {
         Authorization authorizer = new Authorization();
         System.out.println(authorizer.getAuthorizationURI());
-        Scanner input = new Scanner(System.in);
-
-        System.out.println(
-                "enter the URL into your browser and click agree, then enter the part after ?code= (should be a long string of alphanumeric characters): ");
-        String code = input.next();
-        input.close();
+        String code = authorizer.handleRedirectUri();
         SpotifyApi spotifyApi = authorizer.apiFromCode(code);
-        // write code here
-        /*
-         * NOTE: this access token will work for 1 hour, if you want to just copy + paste it instead
-         * of going through the authentication process again.
-         */
         String accessToken = spotifyApi.getAccessToken();
         System.out.println(accessToken);
         GetUsersTopArtistsRequest getUsersTopArtistsRequest = spotifyApi.getUsersTopArtists()
-//              .limit(10)
-//              .offset(0)
-//              .time_range("medium_term")
-                .build();
+              .limit(10)
+              .offset(0)
+              .time_range("short_term")
+              .build();
         try {
             Paging<Artist> artistPaging = getUsersTopArtistsRequest.execute();
-            System.out.println(Arrays.toString(artistPaging.getItems()));
-            
+            for (Artist artist : artistPaging.getItems()) {
+                System.out.println(artist.toString());
+            }
         } catch (ParseException | SpotifyWebApiException | IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

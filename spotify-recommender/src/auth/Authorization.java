@@ -123,28 +123,32 @@ public class Authorization {
     public String getAuthorizationURI() {
         return authorizeURI.toString();
     }
-
-    public void handleRedirectUri() {
-        authHttpServer.start();
+    
+    /**
+     * 
+     * @return access token
+     */
+    public String handleRedirectUri() {
+        return authHttpServer.start();
     }
     
-//    public SpotifyApi apiFromCode(String code) {
-//        SpotifyApi spotifyApi = new SpotifyApi.Builder().setClientId(clientId)
-//                .setRedirectUri(redirectUri).build();
-//        AuthorizationCodePKCERequest authorizationCodePKCERequest = spotifyApi
-//                .authorizationCodePKCE(code, codeVerifier).build();
-//        AuthorizationCodeCredentials authorizationCodeCredentials = null;
-//        try {
-//            authorizationCodeCredentials = authorizationCodePKCERequest
-//                    .execute();
-//            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
-//            spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
-//        } catch (ParseException | SpotifyWebApiException | IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        System.out.println("Expires in: " + authorizationCodeCredentials.getExpiresIn());
-//        // Set access and refresh token for further "spotifyApi" object usage
-//        return spotifyApi;
-//    }
+    public SpotifyApi apiFromCode(String code) {
+        SpotifyApi spotifyApi = new SpotifyApi.Builder().setClientId(clientId)
+                .setRedirectUri(redirectUri).build();
+        AuthorizationCodePKCERequest authorizationCodePKCERequest = spotifyApi
+                .authorizationCodePKCE(code, codeVerifier).build();
+        AuthorizationCodeCredentials authorizationCodeCredentials = null;
+        try {
+            authorizationCodeCredentials = authorizationCodePKCERequest
+                    .execute();
+            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+            spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
+        } catch (ParseException | SpotifyWebApiException | IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println("Expires in: " + authorizationCodeCredentials.getExpiresIn());
+        // Set access and refresh token for further "spotifyApi" object usage
+        return spotifyApi;
+    }
 }
