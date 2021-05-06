@@ -1,4 +1,6 @@
+import java.awt.Desktop;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -9,10 +11,15 @@ import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.specification.Artist;
 import com.wrapper.spotify.model_objects.specification.Paging;
+import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.requests.data.personalization.simplified.GetUsersTopArtistsRequest;
+import com.wrapper.spotify.requests.data.playlists.GetListOfUsersPlaylistsRequest;
+import com.wrapper.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 
 import auth.Authorization;
 public class APITest {
+	static String accessToken;
+
 // // For all requests an access token is needed
 //    SpotifyApi spotifyApi = new SpotifyApi.Builder()
 //            .setAccessToken("taHZ2SdB-bPA3FsK3D7ZN5npZS47cMy-IEySVEGttOhXmqaVAIo0ESvTCLjLBifhHOHOIuhFUKPW1WMDP7w6dj3MAZdWT8CLI2MkZaXbYLTeoDvXesf2eeiLYPBGdx8tIwQJKgV8XdnzH_DONk")
@@ -52,25 +59,29 @@ public class APITest {
 //      }
 //    }
     public static void main(String[] args) {
-        Authorization authorizer = new Authorization();
-        System.out.println(authorizer.getAuthorizationURI());
-        String code = authorizer.handleRedirectUri();
-        SpotifyApi spotifyApi = authorizer.apiFromCode(code);
-        String accessToken = spotifyApi.getAccessToken();
-        System.out.println(accessToken);
-        GetUsersTopArtistsRequest getUsersTopArtistsRequest = spotifyApi.getUsersTopArtists()
-              .limit(10)
-              .offset(0)
-              .time_range("short_term")
-              .build();
-        try {
-            Paging<Artist> artistPaging = getUsersTopArtistsRequest.execute();
-            for (Artist artist : artistPaging.getItems()) {
-                System.out.println(artist.toString());
-            }
-        } catch (ParseException | SpotifyWebApiException | IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//    	Authorization authorizer = new Authorization();
+//    	System.out.println(authorizer.getAuthorizationURI());
+//        String code = authorizer.handleRedirectUri();
+//        SpotifyApi spotifyApi = authorizer.apiFromCode(code);
+//        accessToken = spotifyApi.getAccessToken();
+//        System.out.println(accessToken);
+//        GetUsersTopArtistsRequest getUsersTopArtistsRequest = spotifyApi.getUsersTopArtists()
+//              .limit(10)
+//              .offset(0)
+//              .time_range("short_term")
+//              .build();
+//        try {
+//            Paging<Artist> artistPaging = getUsersTopArtistsRequest.execute();
+//            for (Artist artist : artistPaging.getItems()) {
+//                System.out.println(artist.toString());
+//            }
+//        } catch (ParseException | SpotifyWebApiException | IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+        PlaylistSimilarity.getPlaylist("dahn821");
     }
 }
+    
+    
+
