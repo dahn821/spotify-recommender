@@ -23,7 +23,7 @@ import com.wrapper.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import auth.Authorization;
 public class APITest {
 	static String accessToken;
-	static String username;
+	
 
 // // For all requests an access token is needed
 //    SpotifyApi spotifyApi = new SpotifyApi.Builder()
@@ -64,15 +64,15 @@ public class APITest {
 //      }
 //    }
     public static void main(String[] args) {
-    	SpotifyApi spotifyApi = new SpotifyApi.Builder()
-                .setAccessToken("BQBLxC95lu8zEIv8rQjEhl2pOnTjZObqpGOV0xrXsotWEpapCB6qBEUuyHcRhcMKlc435xo0FGflm36xvnPepjoyfjm0Qf9yQBV6BaEu0Iaf7h1h0j23DjxaAZhLJFkWz2uCNWLoKnZ06aLcSgxkNT4QXLErCpGowV4z")
-                .build();
-//    	Authorization authorizer = new Authorization();
-//    	System.out.println(authorizer.getAuthorizationURI());
-//        String code = authorizer.handleRedirectUri();
-//        SpotifyApi spotifyApi = authorizer.apiFromCode(code);
-//        accessToken = spotifyApi.getAccessToken();
-//        System.out.println(accessToken);
+//    	SpotifyApi spotifyApi = new SpotifyApi.Builder()
+//                .setAccessToken("BQBLxC95lu8zEIv8rQjEhl2pOnTjZObqpGOV0xrXsotWEpapCB6qBEUuyHcRhcMKlc435xo0FGflm36xvnPepjoyfjm0Qf9yQBV6BaEu0Iaf7h1h0j23DjxaAZhLJFkWz2uCNWLoKnZ06aLcSgxkNT4QXLErCpGowV4z")
+//                .build();
+    	Authorization authorizer = new Authorization();
+    	System.out.println(authorizer.getAuthorizationURI());
+        String code = authorizer.handleRedirectUri();
+        SpotifyApi spotifyApi = authorizer.apiFromCode(code);
+        accessToken = spotifyApi.getAccessToken();
+        System.out.println(accessToken);
 //        GetUsersTopArtistsRequest getUsersTopArtistsRequest = spotifyApi.getUsersTopArtists()
 //              .limit(10)
 //              .offset(0)
@@ -90,15 +90,7 @@ public class APITest {
 
         
     	Scanner myObj = new Scanner(System.in);  // Create a Scanner object
-    	System.out.println("*All inputs are case sensitive*");
-        System.out.println("What is your Spotify username/ID");
-        username = myObj.nextLine(); 
-        
-		    
-		    System.out.println("Do you want a recommendation from the current top feature playlists or would you like to choose a genre; type g for genre or f for featured");
-		    String type = myObj.nextLine(); 
-		    
-		 PlaylistSimilarity.getPlaylist(spotifyApi, username, type);
+    	
     }
 }
 

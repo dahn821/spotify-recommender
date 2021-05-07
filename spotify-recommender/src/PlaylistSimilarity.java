@@ -330,7 +330,7 @@ public class PlaylistSimilarity {
     	} else  {
 		    System.out.println("Please type g for genre or f for featured (lowercase please :))");
 		    type = myObj.nextLine(); 
-		    String username = APITest.username;
+		    String username = Main.username;
 		 PlaylistSimilarity.getPlaylist(spotifyApi, username, type);
     	}
     }
