@@ -1,7 +1,9 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +21,12 @@ import com.wrapper.spotify.model_objects.specification.Playlist;
 import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
 
+/**
+ * Instantiable class. Contains many API calls to perform recommendations for tracks
+ * 
+ * @author nlao
+ *
+ */
 public class Recommender {
 
     SpotifyApi spotifyApi;
@@ -36,33 +44,72 @@ public class Recommender {
         // consider favorite artists
         return null;
     }
-
-    public List<Artist> recommendArtists() {
+    
+    /**
+     * 
+     * @param number number of artists to recommend (if there are not that many found by algorithm),
+     * then it will not be that large
+     * @return a set of size number containing artists
+     */
+    public Set<Artist> recommendArtists(int number) {
         // get users followed artists
         // take some artists
         // find a genre
         // recommend a track/artist from the genre
-        
+
         // if the user is following an artist already or artist is in their top 20, then do not
         // include
         Artist[] followedArtists = getFollowedArtists().getItems();
-        Artist[] userTopArtists = getUserTopArtists().getItems();
-        Set<Artist> combinedUserTopArtists = new HashSet<Artist>(Arrays.asList(followedArtists));
+        int numTopArtists = 7;
+        Artist[] userTopArtists = getUserTopArtists(numTopArtists).getItems();
+        Set<Artist> combinedUserTopArtists = new HashSet<>(Arrays.asList(followedArtists));
         combinedUserTopArtists.addAll(Arrays.asList(userTopArtists));
-        int limit = 20;
-        Track[] topTracks = getTopTracks(limit).getItems();
-        List<ArtistSimplified> topTrackArtists = new ArrayList<>();
+
+        int limitTopTracks = 20;
+        Track[] topTracks = getTopTracks(limitTopTracks).getItems();
+
+        Set<ArtistSimplified> topTrackArtistsSimplified = new HashSet<>();
         for (Track track : topTracks) {
             ArtistSimplified[] artists = track.getArtists();
-            for(ArtistSimplified artist : artists) {
-                topTrackArtists.add(artist);
+            for (ArtistSimplified artist : artists) {
+                topTrackArtistsSimplified.add(artist);
             }
         }
+        // converting artistsimplified to artist for consistency
+        Set<Artist> topTrackArtists = new HashSet<>();
+        for (ArtistSimplified artist : topTrackArtistsSimplified) {
+            topTrackArtists.add(getArtistFromId(artist.getId()));
+        }
+
+        Set<Artist> relatedArtistsToTopArtists = new HashSet<>();
+        for (Artist artist : combinedUserTopArtists) {
+            relatedArtistsToTopArtists.addAll(Arrays.asList(getRelatedArtists(artist.getId())));
+        }
         
-        
+        Set<Artist> recommendSet = new HashSet<>(topTrackArtists);
+        recommendSet.addAll(relatedArtistsToTopArtists);
+        recommendSet.removeAll(combinedUserTopArtists);
+        Iterator<Artist> recommendIterator = recommendSet.iterator();
+        Set<Artist> outputSet = new HashSet<>();
+        //I kind of want to try using a HashMap w/ frequencies of artists instead of sets, that way
+        //if an artist appears multiple times it is recommended
+        while (outputSet.size() < number && recommendIterator.hasNext()) {
+            outputSet.add(recommendIterator.next());
+        }
+        return outputSet;
     }
 
-    public Paging<PlaylistSimplified> getUserPlaylists() {
+    Artist[] getRelatedArtists(String id) {
+        try {
+            return spotifyApi.getArtistsRelatedArtists(id).build().execute();
+        } catch (ParseException | SpotifyWebApiException | IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    Paging<PlaylistSimplified> getUserPlaylists() {
         try {
             return spotifyApi.getListOfCurrentUsersPlaylists().build().execute();
         } catch (ParseException | SpotifyWebApiException | IOException e) {
@@ -72,12 +119,7 @@ public class Recommender {
         return null;
     }
 
-    /**
-     * weight heavily in the recommender
-     * 
-     * @return "list" of artists
-     */
-    public PagingCursorbased<Artist> getFollowedArtists() {
+    PagingCursorbased<Artist> getFollowedArtists() {
         try {
             return spotifyApi.getUsersFollowedArtists(ModelObjectType.ARTIST).limit(3).build()
                     .execute();
@@ -88,9 +130,9 @@ public class Recommender {
         return null;
     }
 
-    public Paging<Artist> getUserTopArtists() {
+    Paging<Artist> getUserTopArtists(int limit) {
         try {
-            return spotifyApi.getUsersTopArtists().build().execute();
+            return spotifyApi.getUsersTopArtists().limit(limit).build().execute();
         } catch (ParseException | SpotifyWebApiException | IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -98,9 +140,19 @@ public class Recommender {
         return null;
     }
 
-    public Paging<Track> getTopTracks(int limit) {
+    Paging<Track> getTopTracks(int limit) {
         try {
             return spotifyApi.getUsersTopTracks().limit(limit).build().execute();
+        } catch (ParseException | SpotifyWebApiException | IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    Artist getArtistFromId(String id) {
+        try {
+            return spotifyApi.getArtist(id).build().execute();
         } catch (ParseException | SpotifyWebApiException | IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
