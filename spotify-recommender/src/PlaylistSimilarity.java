@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -27,6 +26,7 @@ public class PlaylistSimilarity {
 	static ArrayList<Set<String>> inters = new ArrayList<Set<String>>();
     public static void getPlaylist(SpotifyApi spotifyApi, String userId, String type) {
 	    Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+//	    Similarity based on genre
     	if(type.equals("g")){
     		ArrayList<String[]>categoryList = new ArrayList<String[]>(1000);
         	ArrayList<String> categoryIds = new ArrayList<String>();
@@ -179,7 +179,7 @@ public class PlaylistSimilarity {
         			      System.out.println("Error: " + e.getMessage());
         			    } 
     		    
-    		    
+//    	Similarity based on featured lists
     	} else if (type.equals("f")) {
     		ArrayList<String[]>featured = new ArrayList<String[]>(1000);
         	ArrayList<String> featuredId = new ArrayList<String>();
