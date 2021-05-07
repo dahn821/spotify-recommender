@@ -44,12 +44,15 @@ public class Recommender {
         // consider favorite artists
         return null;
     }
-    
+
     /**
+     * This algorithm will return a set of {@code Artist} objects as specified in the Spotify API
+     * page. As such, methods such as {@code .getName()} can be called to retrieve the name of the
+     * returned artist. For such operations, a for-each loop is recommended.
      * 
      * @param number number of artists to recommend (if there are not that many found by algorithm),
-     * then it will not be that large
-     * @return a set of size number containing artists
+     *               then it will not be that large
+     * @return a set of {@code size} containing at most {@code number} artists
      */
     public Set<Artist> recommendArtists(int number) {
         // get users followed artists
@@ -57,10 +60,10 @@ public class Recommender {
         // find a genre
         // recommend a track/artist from the genre
 
-        // if the user is following an artist already or artist is in their top 20, then do not
-        // include
+        // if the user is following an artist already or artist is in their top numTopArtists, then
+        // do not include
         Artist[] followedArtists = getFollowedArtists().getItems();
-        int numTopArtists = 7;
+        int numTopArtists = 15;
         Artist[] userTopArtists = getUserTopArtists(numTopArtists).getItems();
         Set<Artist> combinedUserTopArtists = new HashSet<>(Arrays.asList(followedArtists));
         combinedUserTopArtists.addAll(Arrays.asList(userTopArtists));
@@ -85,14 +88,14 @@ public class Recommender {
         for (Artist artist : combinedUserTopArtists) {
             relatedArtistsToTopArtists.addAll(Arrays.asList(getRelatedArtists(artist.getId())));
         }
-        
+
         Set<Artist> recommendSet = new HashSet<>(topTrackArtists);
         recommendSet.addAll(relatedArtistsToTopArtists);
         recommendSet.removeAll(combinedUserTopArtists);
         Iterator<Artist> recommendIterator = recommendSet.iterator();
         Set<Artist> outputSet = new HashSet<>();
-        //I kind of want to try using a HashMap w/ frequencies of artists instead of sets, that way
-        //if an artist appears multiple times it is recommended
+        // I kind of want to try using a HashMap w/ frequencies of artists instead of sets, that way
+        // if an artist appears multiple times it is recommended
         while (outputSet.size() < number && recommendIterator.hasNext()) {
             outputSet.add(recommendIterator.next());
         }
