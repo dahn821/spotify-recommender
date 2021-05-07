@@ -323,7 +323,7 @@ public class PlaylistSimilarity {
     			      System.out.println("Name of playlist: " + playlist.getName());
     			      System.out.println("URL: " + playlist.getHref());
     			      System.out.println("Description: " + playlist.getDescription());
-    			      System.out.println("We chose this playlist based on these overlapping words: " + inters.get(index));
+    			      System.out.println("We chose this playlist based on these overlapping key words: " + inters.get(index));
     			    } catch (IOException | SpotifyWebApiException | ParseException e) {
     			      System.out.println("Error: " + e.getMessage());
     			    }
