@@ -1,0 +1,28 @@
+Spotify Recommender Project by David Ahn, Tony An, Nate Lao
+
+This project is a Spotify Recommender that recommends artists and playlists given the needs and wants
+of a user by taking that user's Spotify data. 
+
+We addressed the following categories:
+
+Advanced Topics: Recommendations in social networks
+Social Networks: We looked through the relationships between users and their favorite artists as well
+as those favorite artists' related artists to optimally recommend new artists to a user.
+Physical Networks (Internet): We used similarity measures to recommend playlists to user.
+
+In this project, Nate handled a part of the recommendation algorithms as well as the Java server necessary
+to link the user's Spotify account to our program.
+
+Tony worked with the user interface so that requests for particular genres of music/playlists could be
+requested.
+
+David worked on the recommendation algorithms as well, using similarity measures to recommend playlists
+in a versatile manner.
+
+Initially, we wanted to create a Facebook friend recommender using the Facebook API, and wrote our project 
+proposal on this. However, after speaking to our TA, we realized that this would be difficult given the
+uninformative and obscure nature of the Facebook API.
+
+Thus, we decided to use the Spotify API and implement a Spotify Recommender that flexibly recommends 
+artists, playlists, etc... to a user.
+
