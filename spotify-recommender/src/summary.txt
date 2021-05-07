@@ -7,22 +7,26 @@ We addressed the following categories:
 
 Advanced Topics: Recommendations in social networks
 Social Networks: We looked through the relationships between users and their favorite artists as well
-as those favorite artists' related artists to optimally recommend new artists to a user.
-Physical Networks (Internet): We used similarity measures to recommend playlists to user.
+as those favorite artists' related artists to optimally recommend new artists to a user (triadic closure).
+Document Search/Similarity Measures: We used Jaccard similarity which is a similar alternate to cosine 
+similarity to recommend playlists to user.
 
-In this project, Nate handled a part of the recommendation algorithms as well as the Java server necessary
-to link the user's Spotify account to our program.
 
-Tony worked with the user interface so that requests for particular genres of music/playlists could be
+In this project, Nate handled the recommendation algorithm for artists (Recommender.java) as well as the Java server 
+necessary to link the user's Spotify account to our program.
+
+Tony worked with the user interface (Main.java) so that requests for particular genres of music/playlists could be
 requested.
 
-David worked on the recommendation algorithms as well, using similarity measures to recommend playlists
-in a versatile manner.
+David worked on the playlist recommendation algorithms (PlaylistSimilarity.java) as well, using Jaccard Similarity 
+to recommend playlists either within a genre specified by the user, or from the current group of featured playlists.
 
 Initially, we wanted to create a Facebook friend recommender using the Facebook API, and wrote our project 
 proposal on this. However, after speaking to our TA, we realized that this would be difficult given the
 uninformative and obscure nature of the Facebook API.
 
-Thus, we decided to use the Spotify API and implement a Spotify Recommender that flexibly recommends 
-artists, playlists, etc... to a user.
+Thus, we decided to use the Spotify API (which unfortunately wasn't much easier to use) to implement a Spotify
+Recommender that flexibly recommends artists, playlists, etc... to a user. We discussed maybe representing the
+data in graph structure but found that the Spotify API did not offer much functionality for information on 
+followers and interactions/connections between artists and users.
 
