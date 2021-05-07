@@ -179,7 +179,7 @@ public class PlaylistSimilarity {
         			      System.out.println("Error: " + e.getMessage());
         			    } 
     		    
-//    	Similarity based on featured lists
+//    	Similarity based on featured lists 
     	} else if (type.equals("f")) {
     		ArrayList<String[]>featured = new ArrayList<String[]>(1000);
         	ArrayList<String> featuredId = new ArrayList<String>();
