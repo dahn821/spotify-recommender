@@ -2,6 +2,7 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import org.apache.hc.core5.http.ParseException;
@@ -10,8 +11,11 @@ import com.neovisionaries.i18n.CountryCode;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.specification.Artist;
+import com.wrapper.spotify.model_objects.specification.Category;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
+import com.wrapper.spotify.requests.data.browse.GetCategorysPlaylistsRequest;
+import com.wrapper.spotify.requests.data.browse.GetListOfCategoriesRequest;
 import com.wrapper.spotify.requests.data.personalization.simplified.GetUsersTopArtistsRequest;
 import com.wrapper.spotify.requests.data.playlists.GetListOfUsersPlaylistsRequest;
 import com.wrapper.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
@@ -19,6 +23,7 @@ import com.wrapper.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import auth.Authorization;
 public class APITest {
 	static String accessToken;
+	static String username;
 
 // // For all requests an access token is needed
 //    SpotifyApi spotifyApi = new SpotifyApi.Builder()
@@ -59,6 +64,9 @@ public class APITest {
 //      }
 //    }
     public static void main(String[] args) {
+    	SpotifyApi spotifyApi = new SpotifyApi.Builder()
+                .setAccessToken("BQBLxC95lu8zEIv8rQjEhl2pOnTjZObqpGOV0xrXsotWEpapCB6qBEUuyHcRhcMKlc435xo0FGflm36xvnPepjoyfjm0Qf9yQBV6BaEu0Iaf7h1h0j23DjxaAZhLJFkWz2uCNWLoKnZ06aLcSgxkNT4QXLErCpGowV4z")
+                .build();
 //    	Authorization authorizer = new Authorization();
 //    	System.out.println(authorizer.getAuthorizationURI());
 //        String code = authorizer.handleRedirectUri();
@@ -79,9 +87,21 @@ public class APITest {
 //            // TODO Auto-generated catch block
 //            e.printStackTrace();
 //        }
-        PlaylistSimilarity.getPlaylist("dahn821");
+
+        
+    	Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+    	System.out.println("*All inputs are case sensitive*");
+        System.out.println("What is your Spotify username/ID");
+        username = myObj.nextLine(); 
+        
+		    
+		    System.out.println("Do you want a recommendation from the current top feature playlists or would you like to choose a genre; type g for genre or f for featured");
+		    String type = myObj.nextLine(); 
+		    
+		 PlaylistSimilarity.getPlaylist(spotifyApi, username, type);
     }
 }
+
     
     
 
