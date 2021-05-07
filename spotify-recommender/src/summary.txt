@@ -13,7 +13,7 @@ similarity to recommend playlists to user.
 
 
 In this project, Nathaniel handled the recommendation algorithm for artists (Recommender.java) as well as the Java server 
-necessary to link the user's Spotify account to our program.
+(auth package) necessary to link the user's Spotify account to our program.
 
 Tony worked with the user interface (Main.java) so that requests for particular genres of music/playlists could be
 requested.
