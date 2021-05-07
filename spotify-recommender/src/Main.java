@@ -31,7 +31,7 @@ public class Main {
             PlaylistSimilarity.getPlaylist(spotifyApi, username, type);
         }
         
-                           
+                            
     }
     public static void main(String[] args) {
         // links user's account
