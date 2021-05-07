@@ -172,7 +172,6 @@ public class PlaylistSimilarity {
         		    try {
         			      Playlist playlist = getPlaylistRequest1.execute();
         			      System.out.println("Name of playlist: " + playlist.getName());
-        			      System.out.println("URL: " + playlist.getHref());
         			      System.out.println("Description: " + playlist.getDescription());
         			      System.out.println("We chose this playlist based on these overlapping words: " + inters.get(index));
         			    } catch (IOException | SpotifyWebApiException | ParseException e) {
@@ -321,7 +320,6 @@ public class PlaylistSimilarity {
     		    try {
     			      Playlist playlist = getPlaylistRequest1.execute();
     			      System.out.println("Name of playlist: " + playlist.getName());
-    			      System.out.println("URL: " + playlist.getHref());
     			      System.out.println("Description: " + playlist.getDescription());
     			      System.out.println("We chose this playlist based on these overlapping key words: " + inters.get(index));
     			    } catch (IOException | SpotifyWebApiException | ParseException e) {
