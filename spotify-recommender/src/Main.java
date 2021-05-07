@@ -19,7 +19,10 @@ public class Main {
         int desiredRec = Integer.parseInt(in.next());
                            
         if (desiredRec == 1) {
-            
+            System.out.println("Track Recommendations: ");
+	    for (Track track : recommendTracks()) {
+	        System.out.println(track.getName());
+	    }
         } else if (desiredRec == 2) {
             System.out.println("How many artists would you like recommended?");
 	    int noOfArtists = Integer.parseInt(in.nextLine());
