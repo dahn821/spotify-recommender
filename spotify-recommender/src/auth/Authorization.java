@@ -147,8 +147,6 @@ public class Authorization {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        System.out.println("Expires in: " + authorizationCodeCredentials.getExpiresIn());
-        // Set access and refresh token for further "spotifyApi" object usage
         return spotifyApi;
     }
 }
