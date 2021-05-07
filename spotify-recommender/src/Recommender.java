@@ -1,4 +1,5 @@
 import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.model_objects.specification.Artist;
 import com.wrapper.spotify.model_objects.specification.Track;
 
 import java.io.IOException;
@@ -9,7 +10,14 @@ public class Main {
 	static String username;
 	static SpotifyApi spotifyApi;
 	
-    public static void ask() {
+                            
+    public static void main(String[] args) {
+        // links user's account
+        Authorization authorizer = new Authorization();
+        System.out.println(authorizer.getAuthorizationURI());
+        String code = authorizer.handleRedirectUri();
+        spotifyApi = authorizer.apiFromCode(code);
+        // recommendation process
         Scanner in = new Scanner(System.in);
         System.out.println("*All inputs are case sensitive*");
         System.out.println("What is your Spotify username/ID");
@@ -18,35 +26,26 @@ public class Main {
         System.out.println("What recommendation would you like?");
         System.out.println("Enter 1 for Songs, 2 for Artists, 3 for Playlists");
         int desiredRec = Integer.parseInt(in.next());
-                           
+    	Recommender rec = new Recommender(spotifyApi);
+
         if (desiredRec == 1) {
             System.out.println("Track Recommendations: ");
-	    for (Track track : Recommender.recommendedTracks()) {
-	        System.out.println(track.getName());
-	    }
+            for (Track track : rec.recommendedTracks()) {
+            	System.out.println(track.getName());
+	    	}
         } else if (desiredRec == 2) {
             System.out.println("How many artists would you like recommended?");
-	    int noOfArtists = Integer.parseInt(in.nextLine());
-	    System.out.println("Artist Recommendations: ");
-	    for (Artist artist : Recommender.recommendArtists(noOfArtists)) {
-	        System.out.println(artist.getName());
-	    }
+            int noOfArtists = Integer.parseInt(in.nextLine());
+            System.out.println("Artist Recommendations: ");
+            for (Artist artist : rec.recommendArtists(noOfArtists)) {
+            	System.out.println(artist.getName());
+            }
         } else if (desiredRec == 3) {
             System.out.println("Do you want a recommendation from the current top feature playlists or would you like to choose a genre?");
             System.out.println("(type g for genre or f for featured)");
 		    String type = in.nextLine(); 
             PlaylistSimilarity.getPlaylist(spotifyApi, username, type);
         }
-        
-                            
-    }
-    public static void main(String[] args) {
-        // links user's account
-        Authorization authorizer = new Authorization();
-        System.out.println(authorizer.getAuthorizationURI());
-        String code = authorizer.handleRedirectUri();
-        spotifyApi = authorizer.apiFromCode(code);
-        // recommendation process
-        ask();
+        in.close();
     }
 }
