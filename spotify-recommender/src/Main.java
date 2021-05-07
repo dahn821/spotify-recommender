@@ -18,6 +18,7 @@ public class Main {
         System.out.println("Enter 1 for Songs, 2 for Artists, 3 for Playlists");
         int desiredRec = Integer.parseInt(in.next());
         in.nextLine();
+
                            
         if (desiredRec == 1) {
             
