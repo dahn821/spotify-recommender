@@ -17,13 +17,16 @@ public class Main {
         System.out.println("What recommendation would you like?");
         System.out.println("Enter 1 for Songs, 2 for Artists, 3 for Playlists");
         int desiredRec = Integer.parseInt(in.next());
-        in.nextLine();
-
                            
         if (desiredRec == 1) {
             
         } else if (desiredRec == 2) {
-            
+            System.out.println("How many artists would you like recommended?");
+	    int noOfArtists = Integer.parseInt(in.nextLine());
+	    System.out.println("Artist Recommendations: ");
+	    for (Artist artist : recommendArtists(noOfArtists)) {
+	        System.out.println(artist.getName());
+	    }
         } else if (desiredRec == 3) {
             System.out.println("Do you want a recommendation from the current top feature playlists or would you like to choose a genre?");
             System.out.println("(type g for genre or f for featured)");
