@@ -1,16 +1,15 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Set;
 
 import org.apache.hc.core5.http.ParseException;
 
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import com.wrapper.spotify.model_objects.miscellaneous.PlaylistTracksInformation;
 import com.wrapper.spotify.model_objects.special.FeaturedPlaylists;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Playlist;
@@ -19,23 +18,18 @@ import com.wrapper.spotify.model_objects.specification.PlaylistTrack;
 import com.wrapper.spotify.requests.data.browse.GetListOfFeaturedPlaylistsRequest;
 import com.wrapper.spotify.requests.data.playlists.GetListOfUsersPlaylistsRequest;
 import com.wrapper.spotify.requests.data.playlists.GetPlaylistRequest;
-import com.wrapper.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
-
-import auth.Authorization;
 
 
 public class PlaylistSimilarity {
 	static SpotifyApi spotifyApi = new SpotifyApi.Builder()
-            .setAccessToken("BQATY0SRbm9PbIJqGlrwSnm1l_NkI7xU-s-J8tC2VhrZS6Dx-B9ky0cF9VFfkmKoz3SX-X9C9lWkeyYgqt240L9CDg7-MG0elHiuqw_eUxaxqz7NVRRcEWpYpWmv8gwvhr1MfgW5uhhKYKxJocIvpch241DM0oCJOc0U")
+            .setAccessToken("BQCNMBvR3I-N70Ao-mJm46RqPLtmCvUEePFk25f_6cQS5gP2g5ILhjqoo0mP4rcmQZACacufGXNeXah-dEwftQi-j5zvY7P_Sf3-DAxTpOLx0xMj5QduB8vX1iVyUDfNBa-d9STT0qEuNnVJuAmKC63EEVEmYimGPB8y")
             .build();
-	
+	static ArrayList<Set<String>> inters = new ArrayList<Set<String>>();
 	
     public static void getPlaylist(String userId) {
-    	ArrayList<String> featured = new ArrayList<String>(1000);
+    	ArrayList<String[]>featured = new ArrayList<String[]>(1000);
     	ArrayList<String> featuredId = new ArrayList<String>();
-    	for (int i = 0; i < 10; i++) {
-    		  featured.add("");
-    		}
+
         GetListOfFeaturedPlaylistsRequest getListOfFeaturedPlaylistsRequest = spotifyApi
         	    .getListOfFeaturedPlaylists()
 //        	          .country(CountryCode.SE)
@@ -58,7 +52,7 @@ public class PlaylistSimilarity {
     	
     	
     
-    	HashMap map = new HashMap();
+    	HashMap<String, String> map = new HashMap<String, String>();
 		GetListOfUsersPlaylistsRequest getListOfUsersPlaylistsRequest = spotifyApi
 	    	    .getListOfUsersPlaylists(userId)
 	//    	          .limit(10)
@@ -75,7 +69,7 @@ public class PlaylistSimilarity {
 	        }
 	  	
 	    Scanner myObj = new Scanner(System.in);  // Create a Scanner object
-	    System.out.println("choose a playlist");
+	    System.out.println("choose one of your playlists from above");
 
 	    String playlistName = myObj.nextLine();  // Read user input
 	    
@@ -95,9 +89,9 @@ public class PlaylistSimilarity {
 //		    } catch (IOException | SpotifyWebApiException | ParseException e) {
 //		      System.out.println("Error: " + e.getMessage());
 //		    }
+	    String[] yay = {};
 		for (int i = 0; i < featuredId.size(); i++) {  
-			
-		    Map<String, Integer> count = new HashMap<String, Integer>();
+//		    Map<String, Integer> count = new HashMap<String, Integer>();
 			 GetPlaylistRequest getPlaylistRequest = spotifyApi.getPlaylist(featuredId.get(i))
 	//		          .fields("description")
 	//		          .market(CountryCode.SE)
@@ -111,17 +105,20 @@ public class PlaylistSimilarity {
 			      String curr = "";
 			      for(PlaylistTrack t : tracks.getItems()) {
 			    	  curr = t.getTrack().getName();
-				    	n = n + " " + curr;
+			    	  n = n + " " + curr;
 			      }
-			    	featured.add(i, n);
+			       yay = n.split(" ");
+			    	featured.add(i, yay);
 			    } catch (IOException | SpotifyWebApiException | ParseException e) {
 			      System.out.println("Error: " + e.getMessage());
 			    }
 			    
     }
-		System.out.println(featured);
+//		System.out.println(featured);
     
-		String a = "";
+		
+//		Getting titles of your playlist
+		String[] a = {};
     GetPlaylistRequest getPlaylistRequest = spotifyApi.getPlaylist((String) map.get(playlistName))
     		//		          .fields("description")
     		//		          .market(CountryCode.SE)
@@ -134,18 +131,72 @@ public class PlaylistSimilarity {
     				      
     				      String curr = "";
     				      for(PlaylistTrack t : tracks.getItems()) {
-    				    	  curr = t.getTrack().getName();
-    					    	a = a + " " + curr;
+    				    	  curr = curr + " " + t.getTrack().getName();
+    				    	  
     				      }
-    				    System.out.println(a);
+    				      a = curr.split(" ");   				 
+//    				    System.out.println(a);
     				    } catch (IOException | SpotifyWebApiException | ParseException e) {
     				      System.out.println("Error: " + e.getMessage());
-    				    }
-    
-    	System.out.println(featured.get(0));			    
+    				    }		    
     				    
+    	ArrayList<Double> similarities = new ArrayList<Double>();
+    	Double jSim;
+    	for(int i = 0; i < featured.size(); i++) {
+    		jSim = jaccardSimilarity(a, featured.get(i));
+//    		System.out.println(jSim);
+    		similarities.add(jSim);
+    	}
+    	Double max = Double.MIN_VALUE;
+    	int index = -1;
+
+    	for(int i = 0; i < similarities.size(); i ++){
+    	    if(max < similarities.get(i)){
+    	        max = similarities.get(i);
+    	        index = i;
+    	    }
+    	}
+    	
+		 GetPlaylistRequest getPlaylistRequest1 = spotifyApi.getPlaylist(featuredId.get(index))
+	//		          .fields("description")
+	//		          .market(CountryCode.SE)
+	//		          .additionalTypes("track,episode")
+			    .build();
+		 
+		    try {
+			      Playlist playlist = getPlaylistRequest1.execute();
+			      System.out.println("Name of playlist: " + playlist.getName());
+			      System.out.println("URL: " + playlist.getHref());
+			      System.out.println("Description: " + playlist.getDescription());
+			      System.out.println("We chose this playlist based on these overlapping words: " + inters.get(index));
+			    } catch (IOException | SpotifyWebApiException | ParseException e) {
+			      System.out.println("Error: " + e.getMessage());
+			    }
     }
     
+//    Jaccard Similarity function
+    public static Double jaccardSimilarity(String[] d1, String[] d2) {
+        Set<String> intersection = new HashSet<String>();
+        Set<String> union = new HashSet<String>();
+        boolean unionFilled = false;
+        int leftLength = d1.length;
+        int rightLength = d2.length;
+
+        for (int leftIndex = 0; leftIndex < leftLength; leftIndex++) {
+            union.add(d1[leftIndex]);
+            for (int rightIndex = 0; rightIndex < rightLength; rightIndex++) {
+                if (!unionFilled) {
+                    union.add(d2[rightIndex]);
+                }
+                if (d1[leftIndex].equals(d2[rightIndex])) {
+                    intersection.add(d1[leftIndex]);
+                }
+            }
+            unionFilled = true;
+        }
+        inters.add(intersection);
+        return Double.valueOf(intersection.size()) / Double.valueOf(union.size());
+    }
     //compare a and elements of arraylist featured using cosine similarity or jaccard similarity
 }
     
