@@ -1,6 +1,6 @@
 Spotify Recommender Project by David Ahn, Tony An, Nathaniel Lao
 
-This project is a Spotify Recommender that recommends artists and playlists given the needs and wants
+This project is a Spotify Recommender that recommends songs, artists, and playlists given the needs and wants
 of a user by taking that user's Spotify data. 
 
 We addressed the following categories:
@@ -11,12 +11,11 @@ as those favorite artists' related artists to optimally recommend new artists to
 Document Search/Similarity Measures: We used Jaccard similarity which is a similar alternate to cosine 
 similarity to recommend playlists to user.
 
-
 In this project, Nathaniel handled the recommendation algorithm for artists (Recommender.java) as well as the Java server 
 (auth package) necessary to link the user's Spotify account to our program.
 
 Tony worked with the user interface (Main.java) so that requests for particular genres of music/playlists could be
-requested.
+requested and so that our algorithms would be customizable per the request of the user.
 
 David worked on the playlist recommendation algorithms (PlaylistSimilarity.java) as well, using Jaccard Similarity 
 to recommend playlists either within a genre specified by the user, or from the current group of featured playlists.
