@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 
 import org.apache.hc.core5.http.ParseException;
 
+import com.neovisionaries.i18n.CountryCode;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -42,23 +44,41 @@ public class Recommender {
     }
 
     /**
-     * Does not need any parameters because the api object itself contains the access code
+     * Does not need any parameters because the API object itself contains the access code. This
+     * algorithm returns a list of {@code track} objects (not ordered by anything in this case) to
+     * recommend to the user. As such, methods such as {@code .getName()} can be called to retrieve
+     * the name of the returned artist. For such operations, a for-each loop is recommended.
      * 
-     * @return
+     * @param number number of tracks to recommend
+     * @return a list of recommended tracks
      */
-    public List<Track> recommendedTracks() {
+    public List<Track> recommendedTracks(int number) {
         // consider favorite artists
-        return null;
+        List<Artist> recommendedArtists = recommendArtists(100);
+        Set<Track> userTopTracks = new HashSet<>(Arrays.asList(getTopTracks(50).getItems()));
+        List<Track> allTracks = new ArrayList<>();
+        recommendedArtists.forEach(
+                artist -> allTracks.addAll(Arrays.asList(getTopTracksOfArtist(artist.getId()))));
+
+        // randomizes it to prevent clustering of songs w/ same genre
+        Collections.shuffle(allTracks);
+
+        // removes top tracks since user already listens to them a lot
+        allTracks.removeAll(userTopTracks);
+
+        List<Track> outputList = new ArrayList<>();
+        allTracks.stream().limit(number).forEach(track -> outputList.add(track));
+        return outputList;
     }
 
     /**
-     * This algorithm will return a set of {@code Artist} objects as specified in the Spotify API
+     * This algorithm will return a list of {@code Artist} objects as specified in the Spotify API
      * page. As such, methods such as {@code .getName()} can be called to retrieve the name of the
      * returned artist. For such operations, a for-each loop is recommended.
      * 
      * @param number number of artists to recommend (if there are not that many found by algorithm),
      *               then it will not be that large
-     * @return a set of {@code size} containing at most {@code number} artists
+     * @return a list of {@code size()} containing at most {@code number} artists
      */
     public List<Artist> recommendArtists(int number) {
 
@@ -101,16 +121,14 @@ public class Recommender {
         }
         List<Artist> outputList = new ArrayList<>();
         // logic partially retrieved from StackOverflow
-        recommended.entrySet()
-                .stream()
+        recommended.entrySet().stream()
                 .sorted(Map.Entry.<Artist, Integer>comparingByValue().reversed())
-                //not completely functional for some reason
-                .filter(entry -> !combinedUserTopArtists.contains(entry.getKey()))
-                .limit(number)
+                // not completely functional for some reason
+                .filter(entry -> !combinedUserTopArtists.contains(entry.getKey())).limit(number)
                 .forEachOrdered(entry -> outputList.add(entry.getKey()));
         return outputList;
     }
-    
+
     /**
      * helper method to treat the map like a histogram.
      * 
@@ -181,6 +199,16 @@ public class Recommender {
     Artist getArtistFromId(String id) {
         try {
             return spotifyApi.getArtist(id).build().execute();
+        } catch (ParseException | SpotifyWebApiException | IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    Track[] getTopTracksOfArtist(String id) {
+        try {
+            return spotifyApi.getArtistsTopTracks(id, CountryCode.US).build().execute();
         } catch (ParseException | SpotifyWebApiException | IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
