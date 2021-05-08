@@ -2,10 +2,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.hc.core5.http.ParseException;
 
@@ -13,6 +18,7 @@ import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.exceptions.detailed.ForbiddenException;
+import com.wrapper.spotify.model_objects.AbstractModelObject;
 import com.wrapper.spotify.model_objects.specification.Artist;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import com.wrapper.spotify.model_objects.specification.Paging;
@@ -55,10 +61,6 @@ public class Recommender {
      * @return a set of {@code size} containing at most {@code number} artists
      */
     public Set<Artist> recommendArtists(int number) {
-        // get users followed artists
-        // take some artists
-        // find a genre
-        // recommend a track/artist from the genre
 
         // if the user is following an artist already or artist is in their top numTopArtists, then
         // do not include
@@ -71,35 +73,55 @@ public class Recommender {
         int limitTopTracks = 20;
         Track[] topTracks = getTopTracks(limitTopTracks).getItems();
 
-        Set<ArtistSimplified> topTrackArtistsSimplified = new HashSet<>();
+        Map<Artist, Integer> topTrackArtists = new HashMap<>();
         for (Track track : topTracks) {
             ArtistSimplified[] artists = track.getArtists();
             for (ArtistSimplified artist : artists) {
-                topTrackArtistsSimplified.add(artist);
+                // converting artistsimplified to artist for consistency (there might be a better
+                // way to do
+                // this)
+                updateFrequency(topTrackArtists, getArtistFromId(artist.getId()), 1);
             }
         }
-        // converting artistsimplified to artist for consistency (there might be a better way to do this)
-        Set<Artist> topTrackArtists = new HashSet<>();
-        for (ArtistSimplified artist : topTrackArtistsSimplified) {
-            topTrackArtists.add(getArtistFromId(artist.getId()));
-        }
 
-        Set<Artist> relatedArtistsToTopArtists = new HashSet<>();
+        Map<Artist, Integer> relatedArtistsToTopArtists = new HashMap<>();
         for (Artist artist : combinedUserTopArtists) {
-            relatedArtistsToTopArtists.addAll(Arrays.asList(getRelatedArtists(artist.getId())));
+            List<Artist> relatedArtists = Arrays.asList(getRelatedArtists(artist.getId()));
+            for (Artist related : relatedArtists) {
+                updateFrequency(relatedArtistsToTopArtists, related, 1);
+            }
         }
 
-        Set<Artist> recommendSet = new HashSet<>(topTrackArtists);
-        recommendSet.addAll(relatedArtistsToTopArtists);
-        recommendSet.removeAll(combinedUserTopArtists);
-        Iterator<Artist> recommendIterator = recommendSet.iterator();
-        Set<Artist> outputSet = new HashSet<>();
-        // I kind of want to try using a HashMap w/ frequencies of artists instead of sets, that way
-        // if an artist appears multiple times it is recommended
-        while (outputSet.size() < number && recommendIterator.hasNext()) {
-            outputSet.add(recommendIterator.next());
+        Map<Artist, Integer> recommended = new HashMap<>(topTrackArtists);
+        for (Artist artist : relatedArtistsToTopArtists.keySet()) {
+            updateFrequency(recommended, artist, relatedArtistsToTopArtists.get(artist));
         }
+
+        for (Artist artist : combinedUserTopArtists) {
+            recommended.remove(artist);
+        }
+        Set<Artist> outputSet = new HashSet<>();
+        // logic retrived from StackOverflow
+        Stream<Entry<Artist, Integer>> recommendedLimited = recommended.entrySet().stream()
+                .sorted(Map.Entry.<Artist, Integer>comparingByValue().reversed()).limit(number);
+        recommendedLimited.map(object -> outputSet.add(object.getKey()));
         return outputSet;
+    }
+    
+    /**
+     * helper method to treat the map like a histogram.
+     * 
+     * @param map    map of artists -> frequencies
+     * @param artist artist to insert into the map
+     */
+    private static void updateFrequency(Map<Artist, Integer> map, Artist artist, int frequency) {
+        if (map.containsKey(artist)) {
+            int currFreq = map.get(artist);
+            map.replace(artist, currFreq + frequency);
+        } else {
+            map.put(artist, 1);
+        }
+
     }
 
     Artist[] getRelatedArtists(String id) {
