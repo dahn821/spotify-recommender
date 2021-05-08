@@ -52,7 +52,7 @@ public class Recommender {
      * @param number number of tracks to recommend
      * @return a list of recommended tracks
      */
-    public List<Track> recommendedTracks(int number) {
+    public List<Track> recommendTracks(int number) {
         // consider favorite artists
         List<Artist> recommendedArtists = recommendArtists(100);
         Set<Track> userTopTracks = new HashSet<>(Arrays.asList(getTopTracks(50).getItems()));
