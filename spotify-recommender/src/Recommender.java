@@ -60,7 +60,7 @@ public class Recommender {
      *               then it will not be that large
      * @return a set of {@code size} containing at most {@code number} artists
      */
-    public Set<Artist> recommendArtists(int number) {
+    public List<Artist> recommendArtists(int number) {
 
         // if the user is following an artist already or artist is in their top numTopArtists, then
         // do not include
@@ -96,16 +96,19 @@ public class Recommender {
         for (Artist artist : relatedArtistsToTopArtists.keySet()) {
             updateFrequency(recommended, artist, relatedArtistsToTopArtists.get(artist));
         }
-
         for (Artist artist : combinedUserTopArtists) {
             recommended.remove(artist);
         }
-        Set<Artist> outputSet = new HashSet<>();
-        // logic retrived from StackOverflow
-        Stream<Entry<Artist, Integer>> recommendedLimited = recommended.entrySet().stream()
-                .sorted(Map.Entry.<Artist, Integer>comparingByValue().reversed()).limit(number);
-        recommendedLimited.map(object -> outputSet.add(object.getKey()));
-        return outputSet;
+        List<Artist> outputList = new ArrayList<>();
+        // logic partially retrieved from StackOverflow
+        recommended.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Artist, Integer>comparingByValue().reversed())
+                //not completely functional for some reason
+                .filter(entry -> !combinedUserTopArtists.contains(entry.getKey()))
+                .limit(number)
+                .forEachOrdered(entry -> outputList.add(entry.getKey()));
+        return outputList;
     }
     
     /**
