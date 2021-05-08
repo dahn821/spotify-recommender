@@ -29,8 +29,10 @@ public class Main {
     	Recommender rec = new Recommender(spotifyApi);
 
         if (desiredRec == 1) {
+            System.out.println("How many tracks would you like recommended?");
+            int noOfTracks = Integer.parseInt(in.next());
             System.out.println("Track Recommendations: ");
-            for (Track track : rec.recommendedTracks()) {
+            for (Track track : rec.recommendTracks(noOfTracks)) {
             	System.out.println(track.getName());
 	    	}
         } else if (desiredRec == 2) {
