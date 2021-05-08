@@ -48,7 +48,9 @@ public class Recommender {
      * algorithm returns a list of {@code track} objects (not ordered by anything in this case) to
      * recommend to the user. As such, methods such as {@code .getName()} can be called to retrieve
      * the name of the returned artist. For such operations, a for-each loop is recommended. Known
-     * issue: {@code track.getName()} will return "????" if using non-ASCII characters.
+     * issue: {@code track.getName()} will return "????" if using non-ASCII characters. Also, should
+     * give links to the tracks because sometimes many songs have the same name (the links are also
+     * subject to the "????" problem for some reason).
      * 
      * @param number number of tracks to recommend
      * @return a list of recommended tracks
@@ -58,16 +60,15 @@ public class Recommender {
         List<Artist> recommendedArtists = recommendArtists(15);
         Set<Track> userTopTracks = new HashSet<>(Arrays.asList(getTopTracks(50).getItems()));
         List<Track> allTracks = new ArrayList<>();
-        recommendedArtists.forEach(
-                artist -> {
-                    allTracks.addAll(Arrays.asList(getTopTracksOfArtist(artist.getId())));
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                });
+        recommendedArtists.forEach(artist -> {
+            allTracks.addAll(Arrays.asList(getTopTracksOfArtist(artist.getId())));
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        });
 
         // randomizes it to prevent clustering of songs w/ same genre
         Collections.shuffle(allTracks);
