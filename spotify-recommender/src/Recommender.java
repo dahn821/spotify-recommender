@@ -47,18 +47,27 @@ public class Recommender {
      * Does not need any parameters because the API object itself contains the access code. This
      * algorithm returns a list of {@code track} objects (not ordered by anything in this case) to
      * recommend to the user. As such, methods such as {@code .getName()} can be called to retrieve
-     * the name of the returned artist. For such operations, a for-each loop is recommended.
+     * the name of the returned artist. For such operations, a for-each loop is recommended. Known
+     * issue: {@code track.getName()} will return "????" if using non-ASCII characters.
      * 
      * @param number number of tracks to recommend
      * @return a list of recommended tracks
      */
     public List<Track> recommendTracks(int number) {
         // consider favorite artists
-        List<Artist> recommendedArtists = recommendArtists(100);
+        List<Artist> recommendedArtists = recommendArtists(15);
         Set<Track> userTopTracks = new HashSet<>(Arrays.asList(getTopTracks(50).getItems()));
         List<Track> allTracks = new ArrayList<>();
         recommendedArtists.forEach(
-                artist -> allTracks.addAll(Arrays.asList(getTopTracksOfArtist(artist.getId()))));
+                artist -> {
+                    allTracks.addAll(Arrays.asList(getTopTracksOfArtist(artist.getId())));
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                });
 
         // randomizes it to prevent clustering of songs w/ same genre
         Collections.shuffle(allTracks);
